@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+
+    <!-- !!!! Driver Class Path !!!! -->
+    <classPathEntry location="C:\\JSP\\mysql-connector-java-5.1.39\\mysql-connector-java-5.1.39\\mysql-connector-java-5.1.39-bin.jar"/>
+
+    <context id="context" targetRuntime="MyBatis3">
+        <property name="mergeable" value="true"/>
+
+        <commentGenerator>
+
+            <property name="suppressAllComments" value="false"/>
+            <property name="suppressDate" value="true"/>
+        </commentGenerator>
+
+        <!-- !!!! Database Configurations !!!! -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/luckdraw?characterEncoding=UTF-8"
+                        userId="root"
+                        password=""/>
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <!-- !!!! Model Configurations !!!! -->
+        <javaModelGenerator targetPackage="dao.model" targetProject="src/main/java">
+            <property name="mergeable" value="true"/>
+            <property name="enableSubPackages" value="false"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- !!!! Mapper XML Configurations !!!! -->
+        <sqlMapGenerator targetPackage="dao.xml" targetProject="src/main/java">
+            <property name="mergeable" value="true"/>
+            <property name="enableSubPackages" value="false"/>
+        </sqlMapGenerator>
+
+        <!-- !!!! Mapper Interface Configurations !!!! -->
+        <javaClientGenerator targetPackage="dao.mapper"
+                             targetProject="src/main/java" type="XMLMAPPER">
+            <property name="mergeable" value="true"/>
+        </javaClientGenerator>
+
+        <!-- !!!! Table Configurations !!!! -->
+
+
+        <table tableName="draw_log"></table>
+
+    </context>
+</generatorConfiguration>
