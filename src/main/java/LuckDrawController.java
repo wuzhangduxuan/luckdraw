@@ -1,9 +1,9 @@
-package controller;
-
+import controller.ResultConst;
 import controller.result.LuckMessage;
 import controller.result.ResultBean;
 import dao.model.Prize;
 import org.apache.log4j.Logger;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,17 +16,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import service.LuckDrawService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
  * Created by 吴樟 on www.haixiangzhene.xyz
  * 2017/10/18.
  */
+
 @EnableTransactionManagement
-@ComponentScan("service")
+@MapperScan("dao.mapper")
+@ComponentScan({"service","config"})
 @Controller
 @SpringBootApplication
 public class LuckDrawController {
+
+    @Autowired
+    private DataSource dataSource;
 
     private Logger logger=Logger.getLogger(this.getClass());
 
@@ -35,7 +42,8 @@ public class LuckDrawController {
 
     @ResponseBody
     @ExceptionHandler(value = Throwable.class)
-    public ResultBean<String> handler(){
+    public ResultBean<String> handler() throws SQLException {
+
         ResultBean<String> resultBean=new ResultBean<String>();
         resultBean.setCode(-1);
         resultBean.setMessage(ResultConst.ERRORMESSAGE);
@@ -82,13 +90,10 @@ public class LuckDrawController {
         resultBean.setMessage(luckMessage);
         long end=System.currentTimeMillis();
         logger.info("抽奖耗时:  "+(end-start)+"ms");
-
         return resultBean;
     }
 
-
-
     public static void main(String[] args) {
-        SpringApplication.run(LuckDrawController.class,"--server.port=8080");
+        SpringApplication.run(LuckDrawController.class,"--server.port=8081");
     }
 }

@@ -21,8 +21,8 @@ import java.util.Random;
  * 2017/10/18.
  * luck to draw
  */
-@MapperScan("dao.mapper")
 @SpringBootApplication
+
 public class LuckDrawService {
 
     @Autowired
