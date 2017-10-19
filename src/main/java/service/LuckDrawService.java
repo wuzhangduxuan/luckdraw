@@ -3,9 +3,9 @@ package service;
 import dao.mapper.DrawLogMapper;
 import dao.mapper.PrizeMapper;
 import dao.model.DrawLog;
+import dao.model.DrawLogExample;
 import dao.model.Prize;
 import dao.model.PrizeExample;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.transaction.annotation.Propagation;
@@ -107,6 +107,19 @@ public class LuckDrawService {
         drawLog.setDrawContent(result);
         drawLogMapper.insert(drawLog);
         return result;
+    }
+
+    /**
+     * it is to judge the ip have draw
+     */
+    public boolean isIpDrawed(String ip){
+        DrawLogExample ipExample=new DrawLogExample();
+        ipExample.createCriteria().andDrawIpEqualTo(ip);
+        List<DrawLog> ipLists=drawLogMapper.selectByExample(ipExample);
+        if (ipLists.size()!=0){
+            return false;
+        }
+        return true;
     }
     
 

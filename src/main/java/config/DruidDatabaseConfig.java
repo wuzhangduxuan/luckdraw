@@ -6,14 +6,22 @@ import com.alibaba.druid.support.http.WebStatFilter;
 import com.alibaba.druid.support.spring.stat.DruidStatInterceptor;
 import org.apache.log4j.Logger;
 import org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import service.LuckDrawService;
+import util.IPUtil;
 
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -24,7 +32,9 @@ import java.util.Map;
  * 2017/10/18.
  */
 @Configuration
-public class DruidDatabaseConfig  {
+public class DruidDatabaseConfig  extends WebMvcConfigurerAdapter {
+
+
 
     @Value("${spring.datasource.filters}")
     private String filters;
@@ -52,6 +62,9 @@ public class DruidDatabaseConfig  {
 
     @Value("${spring.datasource.maxWait}")
     private String maxWait;
+
+    @Autowired
+    private LuckDrawService luckDrawService;
 
     private Logger logger=Logger.getLogger(this.getClass());
 
@@ -104,6 +117,8 @@ public class DruidDatabaseConfig  {
         return druidStatInterceptor;
     }
 
+
+
     @Bean
     public BeanNameAutoProxyCreator beanNameAutoProxyCreator() {
         BeanNameAutoProxyCreator beanNameAutoProxyCreator = new BeanNameAutoProxyCreator();
@@ -114,4 +129,16 @@ public class DruidDatabaseConfig  {
         return beanNameAutoProxyCreator;
     }
 
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new HandlerInterceptorAdapter(){
+            @Override
+            public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+                String userIp= IPUtil.getIpAddr(request);
+                boolean result=luckDrawService.isIpDrawed(userIp);
+                logger.info("the ip "+userIp+"===="+result);
+                return result;
+            }
+        }).addPathPatterns("/panic");
+    }
 }
