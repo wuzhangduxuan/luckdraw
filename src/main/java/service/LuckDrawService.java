@@ -1,7 +1,6 @@
 package service;
 
 import controller.RedisConst;
-import controller.ResultConst;
 import controller.redis.PrizeResult;
 import dao.mapper.DrawLogMapper;
 import dao.mapper.PrizeMapper;
@@ -24,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.*;
 
 /**
  * Created by 吴樟 on www.haixiangzhene.xyz
@@ -33,6 +33,8 @@ import java.util.Set;
 @SpringBootApplication
 
 public class LuckDrawService {
+
+    private ExecutorService executorService= Executors.newFixedThreadPool(5);
 
     @Autowired
     private DrawLogMapper drawLogMapper;
@@ -198,7 +200,7 @@ public class LuckDrawService {
      * 采用乐观锁,由于本身库存是-1操作,所以可以默认把库存看作是版本号
      * 采用redis回调回来的数据判断是否已经空了，防止扣除
      */
-    public void luckDrawByRedis(HttpServletRequest request){
+    public int luckDrawByRedis(HttpServletRequest request){
         Jedis jedis=null;
         try {
             String ip=IPUtil.getIpAddr(request);
@@ -220,9 +222,12 @@ public class LuckDrawService {
                     if (i<0){   //利用回调防止多次抢空
                         throw new NullPointerException("一等奖已被抢空");
                     }
-                    addResultToRedis(jedis,ip,RedisConst.FIRSTLEVEL);
-                }
 
+                    syncSaveToRedis(jedis,ip,RedisConst.FIRSTLEVEL);
+                    return 1;
+                }else {
+                    return 0;
+                }
             }else if (luckNum-(result.getFirstSize()+result.getSecondSize())<=0){
                 if(result.getSecondSize()<=0) {     //
                     throw new NullPointerException("二等奖已被抢购完");
@@ -236,9 +241,10 @@ public class LuckDrawService {
                     if (i<0){   //利用回调防止多次抢空
                         throw new NullPointerException("二等奖已被抢空");
                     }
-                    addResultToRedis(jedis,ip,RedisConst.SECONDLEVEL);
+                    syncSaveToRedis(jedis,ip,RedisConst.SECONDLEVEL);
+                    return 2;
                 }
-
+                return 0;
             }else if (luckNum-(result.getFirstSize()+result.getSecondSize()+result.getThirdSize())<=0){
                 if(result.getSecondSize()<=0) {
                     throw new NullPointerException("三等奖已被抢购完");
@@ -252,9 +258,10 @@ public class LuckDrawService {
                     if (i<0){   //利用回调防止多次抢空
                         throw new NullPointerException("三等奖已被抢空");
                     }
-                    addResultToRedis(jedis,ip,RedisConst.THIRDLEVEL);
+                    syncSaveToRedis(jedis,ip,RedisConst.THIRDLEVEL);
+                    return 3;
                 }
-
+                return 0;
             }else {
                 if (result.getThankSize()<=0){
                     throw new NullPointerException("感谢奖已被抢购完");
@@ -268,9 +275,10 @@ public class LuckDrawService {
                     if (i<0){   //利用回调防止多次抢空
                         throw new NullPointerException("感谢奖已被抢空");
                     }
-                    addResultToRedis(jedis,ip, RedisConst.THANKSLEVEL);
+                    syncSaveToRedis(jedis,ip, RedisConst.THANKSLEVEL);
+                    return 4;
                 }
-
+                return 0;
             }
         }catch (Throwable e){
             logger.error(e.getMessage());
@@ -279,7 +287,21 @@ public class LuckDrawService {
                 jedis.close();
             }
         }
+        return 0;
     }
+
+    /**
+     * 异步存储到redis
+     */
+    public void syncSaveToRedis(Jedis jedis,String ip,String prizeLevel){
+        executorService.submit(new Runnable() {
+            @Override
+            public void run(){
+                addResultToRedis(jedis,ip,prizeLevel);
+            }
+        });
+    }
+
 
     /**
      * 1.存入prize_level : {ip..} 用于获取一等奖获取者

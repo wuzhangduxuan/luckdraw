@@ -1,5 +1,9 @@
 package util;
 
+import org.apache.log4j.Logger;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -7,6 +11,8 @@ import java.util.Date;
  * 2017/10/24.
  */
 public class DateUtil {
+
+    private static Logger logger=Logger.getLogger(DateUtil.class);
 
 
     public static String diffDate(Date start, Date now){
@@ -20,6 +26,13 @@ public class DateUtil {
         return day+"天"+hour+"时"+minu+"分"+mm+"秒";
     }
 
+    public static long diffMS(Date start, Date now){
+        long startTimes=start.getTime();
+        long nowTimes=now.getTime();
+        return startTimes-nowTimes;
+    }
+
+
     public static boolean isExpired(Date start, Date now){
         long startTimes=start.getTime();
         long nowTimes=now.getTime();
@@ -28,6 +41,18 @@ public class DateUtil {
         }else{
             return true;
         }
+    }
+
+    public static Date getDate(String year,String hour){
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date=new Date();
+        try {
+            date=simpleDateFormat.parse(year+" "+hour);
+        } catch (ParseException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
+        return date;
     }
 
 }

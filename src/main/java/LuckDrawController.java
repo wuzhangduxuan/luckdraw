@@ -22,6 +22,7 @@ import util.DateUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -57,11 +58,18 @@ public class LuckDrawController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/setCountDown")
+    public void setCountDown(String year,String times){
+        SystemConst.startLuckDraw=DateUtil.getDate(year,times);
+        ResultBean<String> resultBean=new ResultBean<>();
+        resultBean.setCode(1);
+        resultBean.setMessage("设置开抢时间为"+SystemConst.startLuckDraw.getTime());
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/queryCountDown")
     //查询倒计时
     public ResultBean<String> queryCountDown(){
-        luckDrawService.queryAllByRedis();
-        luckDrawService.initRedis();
         ResultBean<String> resultBean=new ResultBean<>();
         Date now=new Date();
         Date start= SystemConst.startLuckDraw;
@@ -70,8 +78,8 @@ public class LuckDrawController {
             resultBean.setMessage("已在抽奖状态");
         }else{
             resultBean.setCode(1);
-            String diff=DateUtil.diffDate(start,now);
-            resultBean.setMessage(diff);
+            long diff=DateUtil.diffMS(start,now);
+            resultBean.setMessage(diff+"");
         }
         return resultBean;
     }
@@ -152,11 +160,31 @@ public class LuckDrawController {
 
     @ResponseBody
     @RequestMapping("/luckDraw")
-    public void LuckDrawByRedis(HttpServletRequest request){
+    public ResultBean<LuckMessage> LuckDrawByRedis(HttpServletRequest request){
+        ResultBean<LuckMessage> resultBean=new ResultBean<LuckMessage>();
         long start=System.currentTimeMillis();
-        luckDrawService.luckDrawByRedis(request);
+        int luckId=luckDrawService.luckDrawByRedis(request);
+        LuckMessage luckMessage=new LuckMessage();
+        if (luckId==ResultConst.NOTGETLEVEL){
+            luckMessage.setPrizeLevel(ResultConst.NOTGETLEVEL);
+            luckMessage.setLuckMessage(ResultConst.NOTGETLUCK);
+        }else if (luckId==ResultConst.FIRSTLEVEL){
+            luckMessage.setPrizeLevel(ResultConst.FIRSTLEVEL);
+            luckMessage.setLuckMessage(ResultConst.FIRSTLUCK);
+        }else if (luckId==ResultConst.SECONDLEVEL){
+            luckMessage.setPrizeLevel(ResultConst.SECONDLEVEL);
+            luckMessage.setLuckMessage(ResultConst.SECONDLUCK);
+        }else if (luckId==ResultConst.THIRDLEVEL){
+            luckMessage.setPrizeLevel(ResultConst.THIRDLEVEL);
+            luckMessage.setLuckMessage(ResultConst.THIRDLUCK);
+        }else if (luckId==ResultConst.THANKLEVEL){
+            luckMessage.setPrizeLevel(ResultConst.THANKLEVEL);
+            luckMessage.setLuckMessage(ResultConst.THANKLUCK);
+        }
+        resultBean.setMessage(luckMessage);
         long end=System.currentTimeMillis();
         logger.info("采用redis的抢购耗时:"+(end-start)+"ms");
+        return resultBean;
     }
 
     public static void main(String[] args) {
