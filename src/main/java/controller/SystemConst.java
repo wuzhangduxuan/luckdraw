@@ -17,7 +17,7 @@ public class SystemConst {
     static {
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            startLuckDraw=simpleDateFormat.parse("2017-10-24 11:00:00");
+            startLuckDraw=simpleDateFormat.parse("2017-10-25 19:06:00");
         } catch (ParseException e) {
             e.printStackTrace();
         }

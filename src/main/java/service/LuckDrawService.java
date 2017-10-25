@@ -1,6 +1,7 @@
 package service;
 
 import controller.RedisConst;
+import controller.ResultConst;
 import controller.redis.PrizeResult;
 import dao.mapper.DrawLogMapper;
 import dao.mapper.PrizeMapper;
@@ -18,9 +19,11 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Transaction;
 import util.IPUtil;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Created by 吴樟 on www.haixiangzhene.xyz
@@ -145,22 +148,21 @@ public class LuckDrawService {
     /**
      * 读取数据到redis
      */
+    @PostConstruct
     public void initRedis(){
         logger.info("init data from to redis");
         List<Prize> prizes=queryAll();
         long start=System.currentTimeMillis();
         Jedis jedis=null;
         jedis = jedisPool.getResource();
+        jedis.flushAll();   //清空数据,防止冲突
         //定义存放到redis规则
         for (int i=0;i<prizes.size();i++){
             String prize= RedisConst.PRIZEPREX+(i+1);   //i等奖
             int size=prizes.get(i).getPrizeSize();  //数量
             String result=jedis.set(prize,size+"");
-            logger.info(result);
-            String prizeVersion=RedisConst.VERSIONPREX+(i+1);   //i版本号
-            String initVersion="0";
-            jedis.set(prizeVersion,initVersion);
         }
+
         jedis.close();
         long end=System.currentTimeMillis();
         logger.info("初始化数据耗时:"+(end-start)+"ms");
@@ -193,69 +195,140 @@ public class LuckDrawService {
     }
 
     /**
-     * 采用乐观锁
-     * 1.
+     * 采用乐观锁,由于本身库存是-1操作,所以可以默认把库存看作是版本号
+     * 采用redis回调回来的数据判断是否已经空了，防止扣除
      */
-    public void luckDrawByRedis(){
+    public void luckDrawByRedis(HttpServletRequest request){
         Jedis jedis=null;
         try {
+            String ip=IPUtil.getIpAddr(request);
             jedis = jedisPool.getResource();
             PrizeResult result=queryAllByRedis();
             int sum=result.getFirstSize()+result.getSecondSize()+result.getThirdSize()+result.getThankSize();
             Random random=new Random();
             int luckNum=random.nextInt(sum+1);
-            if (true){  //一等奖
-
-                jedis.watch(RedisConst.FIRSTVERSION,RedisConst.FIRSTPRIZE);   //监听一等奖版本号
+            if (luckNum-result.getFirstSize()<=0){  //一等奖
+                if(result.getSecondSize()<=0) {     //降低redis压力
+                    throw new NullPointerException("一等奖已被抢购完");
+                }
+                jedis.watch(RedisConst.FIRSTPRIZESIZE);   //监听一等奖版本号
                 Transaction transac=jedis.multi();  //开启事务
-                transac.incr(RedisConst.FIRSTVERSION);    //版本号增加
-                transac.decr(RedisConst.FIRSTPRIZE);    //减少first
+                transac.decr(RedisConst.FIRSTPRIZESIZE);    //减少first
                 List<Object> list=transac.exec();
                 if (list!=null) {
-                    Long i = (Long) list.get(1);
+                    Long i = (Long) list.get(0);
                     if (i<0){   //利用回调防止多次抢空
                         throw new NullPointerException("一等奖已被抢空");
                     }
+                    addResultToRedis(jedis,ip,RedisConst.FIRSTLEVEL);
                 }
+
             }else if (luckNum-(result.getFirstSize()+result.getSecondSize())<=0){
-                if(result.getSecondSize()==0) {
+                if(result.getSecondSize()<=0) {     //
                     throw new NullPointerException("二等奖已被抢购完");
                 }
-                jedis.watch(RedisConst.SECONDVERSION);   //监听一等奖版本号
+                jedis.watch(RedisConst.SECONDPRIZESIZE);   //监听一等奖版本号
                 Transaction transac=jedis.multi();  //开启事务
-                transac.incr(RedisConst.SECONDVERSION);    //版本号增加
-                transac.decr(RedisConst.SECONDPRIZE);    //减少first
+                transac.decr(RedisConst.SECONDPRIZESIZE);    //减少second
                 List<Object> list=transac.exec();
+                if (list!=null) {
+                    Long i = (Long) list.get(0);
+                    if (i<0){   //利用回调防止多次抢空
+                        throw new NullPointerException("二等奖已被抢空");
+                    }
+                    addResultToRedis(jedis,ip,RedisConst.SECONDLEVEL);
+                }
+
             }else if (luckNum-(result.getFirstSize()+result.getSecondSize()+result.getThirdSize())<=0){
-                if(result.getSecondSize()==0) {
+                if(result.getSecondSize()<=0) {
                     throw new NullPointerException("三等奖已被抢购完");
                 }
-                jedis.watch(RedisConst.THIRDVERSION);   //监听一等奖版本号
+                jedis.watch(RedisConst.THIRDPRIZESIZE);   //监听一等奖版本号
                 Transaction transac=jedis.multi();  //开启事务
-                transac.incr(RedisConst.THIRDVERSION);    //版本号增加
-                transac.decr(RedisConst.THIRDPRIZE);    //减少first
+                transac.decr(RedisConst.THIRDPRIZESIZE);    //减少first
                 List<Object> list=transac.exec();
+                if (list!=null) {
+                    Long i = (Long) list.get(0);
+                    if (i<0){   //利用回调防止多次抢空
+                        throw new NullPointerException("三等奖已被抢空");
+                    }
+                    addResultToRedis(jedis,ip,RedisConst.THIRDLEVEL);
+                }
+
             }else {
-                if (result.getThankSize()==0){
+                if (result.getThankSize()<=0){
                     throw new NullPointerException("感谢奖已被抢购完");
                 }
-                jedis.watch(RedisConst.THANKSVERSION);   //监听一等奖版本号
+                jedis.watch(RedisConst.THANKSPRIZESIZE);   //监听一等奖版本号
                 Transaction transac=jedis.multi();  //开启事务
-                transac.incr(RedisConst.THANKSVERSION);    //版本号增加
-                transac.decr(RedisConst.THANKSPRIZE);    //减少first
+                transac.decr(RedisConst.THANKSPRIZESIZE);    //减少first
                 List<Object> list=transac.exec();
-                logger.info(list);
+                if (list!=null) {
+                    Long i = (Long) list.get(0);
+                    if (i<0){   //利用回调防止多次抢空
+                        throw new NullPointerException("感谢奖已被抢空");
+                    }
+                    addResultToRedis(jedis,ip, RedisConst.THANKSLEVEL);
+                }
+
             }
         }catch (Throwable e){
             logger.error(e.getMessage());
         }finally {
             if (jedis!=null){
-            jedis.close();
+                jedis.close();
             }
         }
-
     }
 
+    /**
+     * 1.存入prize_level : {ip..} 用于获取一等奖获取者
+     * 2.存放ip : prize_level
+     */
+    public void addResultToRedis(Jedis jedis,String ip,String prizeLevel){
+        jedis.set(ip,prizeLevel);   //方便查询黑色ip
+        jedis.sadd(prizeLevel,ip);  //方便查询获奖用户
+    }
+
+
+    /**
+     * 查询获奖用户
+     */
+    public Set<String> getWinPrize(String prizeLevel){
+        Jedis jedis=null;
+        Set<String> userIps= null;
+        try {
+            jedis=jedisPool.getResource();
+            userIps=jedis.smembers(prizeLevel);
+        }catch (Throwable e){
+            logger.error("it throw an exception"+e.getMessage());
+        }finally {
+            if (jedis!=null)
+                jedis.close();
+        }
+        return userIps;
+    }
+
+    /**
+     * 查询已获奖用户
+     */
+    public boolean NotInPrize(String ip){
+        Jedis jedis=null;
+        boolean result=true;
+        try {
+            jedis=jedisPool.getResource();
+            String haved=jedis.get(ip);
+            if (haved!=null)
+                result=false;
+            return result;
+        }catch (Throwable e){
+            logger.error(e.getMessage());
+        }finally {
+            if (jedis!=null)
+                jedis.close();
+        }
+        return result;
+    }
 
 
 }

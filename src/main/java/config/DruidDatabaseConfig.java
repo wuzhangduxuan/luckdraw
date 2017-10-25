@@ -153,10 +153,12 @@ public class DruidDatabaseConfig  extends WebMvcConfigurerAdapter {
                     return false;
                 }
                 String userIp= IPUtil.getIpAddr(request);
-                boolean result=luckDrawService.isIpDrawed(userIp);
+               // boolean result=luckDrawService.isIpDrawed(userIp); mysql版
+                //redis版本
+                boolean result=luckDrawService.NotInPrize(userIp);
                 logger.info("the ip "+userIp+"===="+result);
                 return result;
             }
-        }).addPathPatterns("/panic");
+        }).addPathPatterns("/luckDraw");    //redis  //mysql /panic
     }
 }

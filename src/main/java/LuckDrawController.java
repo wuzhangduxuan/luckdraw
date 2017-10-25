@@ -152,9 +152,9 @@ public class LuckDrawController {
 
     @ResponseBody
     @RequestMapping("/luckDraw")
-    public void LuckDrawByRedis(){
+    public void LuckDrawByRedis(HttpServletRequest request){
         long start=System.currentTimeMillis();
-        luckDrawService.luckDrawByRedis();
+        luckDrawService.luckDrawByRedis(request);
         long end=System.currentTimeMillis();
         logger.info("采用redis的抢购耗时:"+(end-start)+"ms");
     }
