@@ -21,3 +21,10 @@
 ### 1.直接在项目目录luckdraw下运行mvn package即可，建议加上 -X方便看打包流程
 ### 2.可以看到target目录下生成luck.draw-1.0-SNAPSHOT.jar
 ### 3.启动luckdraw,在target目录下面运行java -jar luck.draw-1.0-SNAPSHOT.jar即可启动
+
+接下来更新:
+### 利用redis来实现抢购
+### 具体做法:
+### 1.针对于写覆盖，利用redis的特性,watch以及事务来实现抢购
+### 2.针对于抢空覆盖，则采用redis回调来实现
+### 目前测试，抢购可达到5ms

@@ -60,6 +60,8 @@ public class LuckDrawController {
     @RequestMapping(value = "/queryCountDown")
     //查询倒计时
     public ResultBean<String> queryCountDown(){
+        luckDrawService.queryAllByRedis();
+        luckDrawService.initRedis();
         ResultBean<String> resultBean=new ResultBean<>();
         Date now=new Date();
         Date start= SystemConst.startLuckDraw;
@@ -146,6 +148,15 @@ public class LuckDrawController {
         long end=System.currentTimeMillis();
         logger.info("抽奖耗时:  "+(end-start)+"ms");
         return resultBean;
+    }
+
+    @ResponseBody
+    @RequestMapping("/luckDraw")
+    public void LuckDrawByRedis(){
+        long start=System.currentTimeMillis();
+        luckDrawService.luckDrawByRedis();
+        long end=System.currentTimeMillis();
+        logger.info("采用redis的抢购耗时:"+(end-start)+"ms");
     }
 
     public static void main(String[] args) {
