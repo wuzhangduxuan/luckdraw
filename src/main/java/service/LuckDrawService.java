@@ -43,6 +43,15 @@ public class LuckDrawService {
         return prizes;
     }
 
+    //查询抽奖结果
+    public List<DrawLog> getResultByIp(HttpServletRequest request){
+        String ip=IPUtil.getIpAddr(request);
+        DrawLogExample drawLogExample=new DrawLogExample();
+        drawLogExample.createCriteria().andDrawIpEqualTo(ip);
+        List<DrawLog> drawLogs=drawLogMapper.selectByExample(drawLogExample);
+        return drawLogs;
+    }
+
     //抢购
     //更新采用乐观锁
     @Transactional(propagation = Propagation.REQUIRED,rollbackFor = {Throwable.class})

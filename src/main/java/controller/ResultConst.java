@@ -19,4 +19,10 @@ public class ResultConst {
     public static Integer THANKLEVEL=4;
 
     public static String ERRORMESSAGE="抽奖后台出现错误";
+
+    public static String HavedNotLuckDraw="很可惜你暂未获奖";
+    public static String HaveGetOne="恭喜你已经获得一等奖";
+    public static String HaveGetSecond="恭喜你已经获得二等奖";
+    public static String HaveGetThird="恭喜你已经获得三等奖";
+    public static String HaveGetThank="恭喜你已经抽到感谢奖,谢谢参与";
 }

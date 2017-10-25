@@ -1,9 +1,12 @@
 package config;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
 import com.alibaba.druid.support.spring.stat.DruidStatInterceptor;
+import controller.SystemConst;
+import controller.result.ResultBean;
 import org.apache.log4j.Logger;
 import org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import service.LuckDrawService;
+import util.DateUtil;
 import util.IPUtil;
 
 
@@ -24,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -134,6 +139,19 @@ public class DruidDatabaseConfig  extends WebMvcConfigurerAdapter {
         registry.addInterceptor(new HandlerInterceptorAdapter(){
             @Override
             public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+                //判断距离开奖还有多少时间
+                Date now=new Date();
+                Date start=SystemConst.startLuckDraw;
+                if (!DateUtil.isExpired(start,now)){    //还未到达预定时间
+                    ResultBean<String> resultBean=new ResultBean<>();
+                    resultBean.setCode(-2);
+                    resultBean.setMessage("暂时还没有开放抽奖");
+                    String resultMessage=JSON.toJSONString(resultBean);
+                    response.setContentType("application/json;charset=UTF-8");
+                    response.getWriter().write(resultMessage);
+                    response.getWriter().flush();
+                    return false;
+                }
                 String userIp= IPUtil.getIpAddr(request);
                 boolean result=luckDrawService.isIpDrawed(userIp);
                 logger.info("the ip "+userIp+"===="+result);
