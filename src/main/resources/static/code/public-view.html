@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>Examples</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<style>
+*{
+	margin: 0;
+	padding: 0;
+}
+body{
+	width: 100%;
+}
+.code{
+	position: fixed;
+	width: 100px;
+	height: 100px;
+	border: 2px solid #23213B;
+	bottom: 10px;
+	left: 10px;
+	background: #fff;
+	transition: 0.5s;
+	box-shadow: 0px 2px 5px #23213B;
+}
+.code:hover{
+	width: 550px;
+	height: 550px;
+	box-shadow: 0px 15px 50px #23213B;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 700px;
+    margin: 50px auto;
+}
+.header {
+    text-align: center;
+    height: 70px;
+    line-height: 70px;
+    font-size: 40px;
+    background: -moz-linear-gradient( top,#121026,#34D3FA,#3D3C5C,#121026);
+    background: -webkit-linear-gradient( top,#121026,#34D3FA,#3D3C5C,#121026);
+    box-shadow: inset 0 3px 3px #fff,0 5px 5px #34d3fa;
+    border-radius: 0 0 100px 100px;
+    border-left: 8px solid #34d3fa;
+    border-right: 8px solid #34d3fa;
+    border-top: transparent;
+    color: #fff;
+    text-shadow: 0 4px 5px #121026;
+}
+.content {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+.row {
+    display: flex;
+    justify-content: space-around;
+    height: 50px;
+    line-height: 50px;
+    margin-bottom: 5px;
+    border-radius: 3px 50px 50px 3px;
+    overflow: hidden;
+    color: #fff;
+}
+.col.col-1 {
+    width: 33.3%;
+    text-align: center;
+    background: #7b7b7b;
+}
+.col.col-2 {
+    width: 66.6%;
+    background: #cbcbcb;
+    box-shadow: inset 0 2px 5px black;
+    text-indent: 20px;
+}
+.num {
+    background: #62c074;
+    width: 30px;
+    text-align: center;
+    line-height: 50px;
+}
+.progress {
+    background: #20815b;
+    width: 0%;
+    height: 100%;
+    transition: 0.5s;
+    border-radius: 0 50px 50px 0;
+}
+.scroll-panel {
+	width: 100%;
+	border: 10px solid #34D3FA;
+	border-radius: 5px;
+	box-shadow: inset 0 3px 5px #3A5E76,inset 0 -3px 5px #3A5E76;
+	margin-top: 10px;
+	box-sizing: border-box;
+	padding: 10px;
+	transition: 0.5s;
+}
+#list{
+	transition: 0.5s;
+}
+#list li {
+    list-style: none;
+    height: 30px;
+    line-height: 30px;
+    font-size: 20px;
+    text-align: center;
+    color: #626262;
+    letter-spacing: 5px;
+}
+@keyframes slideInUp {
+  from {
+    transform: translate3d(0, 100%, 0);
+    visibility: visible;
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+.slideInUp {	
+	animation: slideInUp 1s;
+}
+</style>
+
+</head>
+<body>
+	<div class="code"></div>
+	<div class="container">
+		<div class="header">中奖情况</div>
+		<div class="content">
+			<div class="row">
+				<div class="col col-1">一等奖</div>
+				<span class="num">0</span>
+				<div class="col col-2">
+					<div class="progress"></div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col col-1">二等奖</div>
+				<span class="num">0</span>
+				<div class="col col-2">
+					<div class="progress"></div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col col-1">三等奖</div>
+				<span class="num">0</span>
+				<div class="col col-2">
+					<div class="progress"></div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col col-1">感谢奖</div>
+				<span class="num">0</span>
+				<div class="col col-2">
+					<div class="progress"></div>
+				</div>
+			</div>
+		</div>
+		<div class="scroll-panel">
+			<div id="data-list">
+				<!-- <ul id="list">
+					<li><strong>192.168.0.1</strong>获得了<strong>三等奖</strong></li>
+					<li><strong>192.168.0.1</strong>获得了<strong>三等奖</strong></li>
+					<li><strong>192.168.0.1</strong>获得了<strong>三等奖</strong></li>
+					<li><strong>192.168.0.1</strong>获得了<strong>三等奖</strong></li>
+					<li><strong>192.168.0.1</strong>获得了<strong>三等奖</strong></li>
+					<li><strong>192.168.0.1</strong>获得了<strong>三等奖</strong></li>
+					<li><strong>192.168.0.1</strong>获得了<strong>三等奖</strong></li>
+					<li><strong>192.168.0.1</strong>获得了<strong>三等奖</strong></li>
+					<li><strong>192.168.0.1</strong>获得了<strong>三等奖</strong></li>
+					<li><strong>192.168.0.1</strong>获得了<strong>三等奖</strong></li>
+				</ul> -->
+			</div>
+		</div>
+	</div>
+<script>
+	window.onload = function () {
+		var progresses = document.querySelectorAll(".progress");
+		var nums= document.querySelectorAll(".num");
+		var totalNum = [10,30,100,400];
+		var currentNum = [];
+		var numUrl = "";
+		var timer;
+		var timer2;
+
+		var ipNames=[];
+		// var prizeCode=[];
+		var prizeName=[];
+		var msgUrl = "msgnow.json";
+
+		/*
+		获得ajax数据：
+		 */
+		function loadXMLDoc(url,timeout,cfunc){
+		if (window.XMLHttpRequest){
+			xmlhttp=new XMLHttpRequest();
+		}
+		else{
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+			xmlhttp.onreadystatechange=cfunc;
+			xmlhttp.timeout = timeout;
+			xmlhttp.ontimeout = function () {
+				console.log("请求超时");
+				clearTimeout(timer);
+				getData();
+			}
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send();
+		}
+		/*
+		获取剩余奖项数据
+		 */
+		function getData() {
+			loadXMLDoc(numUrl,1500,function(){
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					var numObj = JSON.parse(xmlhttp.responseText);
+					// console.log(obj.message.firstSize);
+					currentNum[0] = numObj.message.firstSize;
+					currentNum[1] = numObj.message.secondSize;
+					currentNum[2] = numObj.message.thirdSize;
+					currentNum[3] = numObj.message.thankSize;
+					init();
+					timer = setTimeout(function () {
+						getData();
+					},1000);
+				}
+			});
+		}
+		// 1秒轮询
+		timer = setTimeout(function () {
+			getData();
+		},1000);
+
+		/*
+		获取实时中奖数据
+		 */
+		// function getNowData() {
+		// 	loadXMLDoc(msgUrl,function(){
+		// 		if (xmlhttp.readyState==4 && xmlhttp.status==200){
+		// 			var msgObj = JSON.parse(xmlhttp.responseText);
+		// 			// console.log(msgObj.message);
+		// 			var msgData = msgObj.message;
+		// 			processNowData(msgData);
+		// 		}
+		// 	});
+		// }
+		// // getNowData();
+		// timer2 = setInterval(function () {
+		// 	getNowData();
+		// },3000)
+
+		// /*
+		// 处理实时中奖数据
+		//  */
+		// function processNowData(data) {
+		// 	var nowData = data;			
+		// 	for (var i = 0; i < nowData.length; i++) {
+		// 		// console.log(nowData[i].ipname);
+		// 		ipNames.push(nowData[i].ipname);
+		// 		// prizeCode.push(nowData[i].prize);
+		// 		switch(nowData[i].prize){
+		// 			case 1:
+		// 				prizeName.push("一等奖");
+		// 				break;
+		// 			case 2:
+		// 				prizeName.push("二等奖");
+		// 				break;
+		// 			case 3:
+		// 				prizeName.push("三等奖");
+		// 				break;
+		// 			case 4:
+		// 				prizeName.push("感谢奖");
+		// 				break;
+		// 		}
+		// 	}
+		// 	for (var i = 0; i < ipNames.length; i++) {
+		// 		var listItem = document.createElement("li");
+		// 		var itemText = document.createTextNode(ipNames[i]+"获得了"+prizeName[i]);
+		// 		listItem.appendChild(itemText);
+		// 		list.appendChild(listItem);
+		// 	}
+		// }
+		
+
+		/*
+		计算获得的数据，进度条百分比
+		 */
+		function calData(currentNum, totalNum) {
+			return Math.floor(currentNum/totalNum*100);
+		}
+
+		/*
+		把计算后的数据显示到视图
+		 */
+		function showData(i) {
+			progresses[i].style.width = calData(currentNum[i], totalNum[i]) + "%";
+			nums[i].innerHTML = currentNum[i];
+		}
+
+		function init(){
+			for(var i = 0; i < nums.length; i++) {
+				showData(i);
+			}
+		}
+	}
+
+</script>
+</body>
+</html>

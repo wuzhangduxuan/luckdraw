@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>设置时间</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<style type="text/css">
+#time {
+    width: 500px;
+    height: 100px;
+    font-size: 50px;
+    text-align: center;
+    border: 3px solid skyblue;
+    border-radius: 50px;
+    color: skyblue;
+}
+.calendarWarp {
+    position: absolute;
+    display: inline-block;
+    font-weight: 100;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%);
+}
+.ECalendarBox.ECalendarNoneSelect {
+    border-color: rgb(152, 90, 166) !important;
+    left: 50% !important;
+    top: 110px !important;
+    transform: translateX(-50%) !important;
+}
+#send-btn {
+    width: 150px;
+    height: 40px;
+    line-height: 40px;
+    background: skyblue;
+    color: #fff;
+    text-align: center;
+    margin: 10px auto;
+    border-radius: 50px;
+    transition: 0.5s;
+}
+#send-btn:hover{
+    background: #047cad;
+}
+#send-btn:active{
+    background: #034560;
+    box-shadow: inset 0 2px 3px #002332;
+}
+</style>
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+</head>
+<body>
+	<div class="calendarWarp">
+	<input type="text" name="date" class='ECalendar' id="time"  value="2017-3-1 15:32"/>
+	<div id="send-btn">发送</div>
+	</div>
+    <script type="text/javascript">
+	$(function(){
+	    var time;
+        $.getJSON(
+            "/getSystemTime",
+            function (data) {
+                $("#time").val(data.message);
+            });
+		$("#send-btn").click(function () {
+		    time = $("#time").val();
+            alert(time);
+			$.post(
+				"/setCountDown",
+				{time: time},
+				function(data){
+					var code = data.code;
+					if (code == 1) {
+						alert("设置时间成功！");
+					}else if(code == -1){
+						alert("设置时间失败");
+					}
+				});
+		})
+	})
+	</script>
+</body>
+</html>

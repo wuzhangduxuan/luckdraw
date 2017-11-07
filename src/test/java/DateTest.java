@@ -5,6 +5,7 @@ import util.DateUtil;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 /**
  * Created by 吴樟 on www.haixiangzhene.xyz
@@ -22,5 +23,4 @@ public class DateTest {
         String st=DateUtil.diffDate(start,now);
         logger.info(st);
     }
-
 }

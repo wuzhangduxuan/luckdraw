@@ -43,11 +43,16 @@ public class DateUtil {
         }
     }
 
-    public static Date getDate(String year,String hour){
-        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static String getTime(Date date){
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        return simpleDateFormat.format(date);
+    }
+
+    public static Date getDate(String times){
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm");
         Date date=new Date();
         try {
-            date=simpleDateFormat.parse(year+" "+hour);
+            date=simpleDateFormat.parse(times);
         } catch (ParseException e) {
             logger.error(e.getMessage());
             e.printStackTrace();

@@ -6,6 +6,8 @@ package controller;
  */
 public class RedisConst {
 
+    public static String PRIZESUM="PRIZE_SUM";
+
     public static String PRIZEPREX="prize_size_";
     public static String VERSIONPREX="prize_version_";
 
@@ -23,5 +25,7 @@ public class RedisConst {
     public static String SECONDLEVEL="prize_2";
     public static String THIRDLEVEL="prize_3";
     public static String THANKSLEVEL="prize_4";
+
+    public static String REALTIME="real_time_award";
 
 }

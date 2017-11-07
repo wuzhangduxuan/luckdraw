@@ -11,12 +11,14 @@ public class ResultConst {
     public static String SECONDLUCK="恭喜你,抽到二等奖";
     public static String THIRDLUCK="恭喜你,抽到三等奖";
     public static String THANKLUCK="恭喜你,抽到感谢奖,有点坑，谢谢参与";
+    public static String JACKPOTLUCK="很遗憾，奖池已经空了";
 
     public static Integer NOTGETLEVEL=0;
     public static Integer FIRSTLEVEL=1;
     public static Integer SECONDLEVEL=2;
     public static Integer THIRDLEVEL=3;
     public static Integer THANKLEVEL=4;
+    public static Integer JACKPOTISNULL=-2;
 
     public static String ERRORMESSAGE="抽奖后台出现错误";
 

@@ -40,7 +40,6 @@ import java.util.Map;
 public class DruidDatabaseConfig  extends WebMvcConfigurerAdapter {
 
 
-
     @Value("${spring.datasource.filters}")
     private String filters;
 
@@ -157,7 +156,8 @@ public class DruidDatabaseConfig  extends WebMvcConfigurerAdapter {
                 //redis版本
                 boolean result=luckDrawService.NotInPrize(userIp);
                 logger.info("the ip "+userIp+"===="+result);
-                return result;
+                return true;
+                // return result;
             }
         }).addPathPatterns("/luckDraw");    //redis  //mysql /panic
     }

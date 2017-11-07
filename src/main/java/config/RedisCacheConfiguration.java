@@ -39,6 +39,19 @@ public class RedisCacheConfiguration extends CachingConfigurerSupport{
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
         jedisPoolConfig.setMaxIdle(maxIdle);
         jedisPoolConfig.setMaxWaitMillis(maxWaitMillis);
+        jedisPoolConfig.setMaxTotal(200);
+        jedisPoolConfig.setMinIdle(8);//设置最小空闲数
+        jedisPoolConfig.setMaxWaitMillis(10000);
+        jedisPoolConfig.setTestOnBorrow(true);
+        jedisPoolConfig.setTestOnReturn(true);
+        //Idle时进行连接扫描
+        jedisPoolConfig.setTestWhileIdle(true);
+        //表示idle object evitor两次扫描之间要sleep的毫秒数
+        jedisPoolConfig.setTimeBetweenEvictionRunsMillis(30000);
+        //表示idle object evitor每次扫描的最多的对象数
+        jedisPoolConfig.setNumTestsPerEvictionRun(10);
+        //表示一个对象至少停留在idle状态的最短时间，然后才能被idle object evitor扫描并驱逐；这一项只有在timeBetweenEvictionRunsMillis大于0时才有意义
+        jedisPoolConfig.setMinEvictableIdleTimeMillis(60000);
         JedisPool jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout);
         return jedisPool;
     }

@@ -1,6 +1,7 @@
 import com.google.common.util.concurrent.RateLimiter;
 import controller.ResultConst;
 import controller.SystemConst;
+import controller.redis.PrizeResult;
 import controller.result.LuckMessage;
 import controller.result.ResultBean;
 import dao.model.DrawLog;
@@ -22,7 +23,6 @@ import util.DateUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -59,11 +59,22 @@ public class LuckDrawController {
 
     @ResponseBody
     @RequestMapping(value = "/setCountDown")
-    public void setCountDown(String year,String times){
-        SystemConst.startLuckDraw=DateUtil.getDate(year,times);
+    public ResultBean<String> setCountDown(String time){
+        SystemConst.startLuckDraw=DateUtil.getDate(time);
         ResultBean<String> resultBean=new ResultBean<>();
         resultBean.setCode(1);
         resultBean.setMessage("设置开抢时间为"+SystemConst.startLuckDraw.getTime());
+        return resultBean;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/getSystemTime")
+    public ResultBean<String> getSystemTime(){
+        ResultBean<String> resultBean=new ResultBean<>();
+        resultBean.setCode(1);
+        String time=DateUtil.getTime(new Date());
+        resultBean.setMessage(time);
+        return resultBean;
     }
 
     @ResponseBody
@@ -75,7 +86,7 @@ public class LuckDrawController {
         Date start= SystemConst.startLuckDraw;
         if (DateUtil.isExpired(start,now)){
             resultBean.setCode(-1);
-            resultBean.setMessage("已在抽奖状态");
+            resultBean.setMessage(0+"");
         }else{
             resultBean.setCode(1);
             long diff=DateUtil.diffMS(start,now);
@@ -161,6 +172,7 @@ public class LuckDrawController {
     @ResponseBody
     @RequestMapping("/luckDraw")
     public ResultBean<LuckMessage> LuckDrawByRedis(HttpServletRequest request){
+
         ResultBean<LuckMessage> resultBean=new ResultBean<LuckMessage>();
         long start=System.currentTimeMillis();
         int luckId=luckDrawService.luckDrawByRedis(request);
@@ -180,6 +192,9 @@ public class LuckDrawController {
         }else if (luckId==ResultConst.THANKLEVEL){
             luckMessage.setPrizeLevel(ResultConst.THANKLEVEL);
             luckMessage.setLuckMessage(ResultConst.THANKLUCK);
+        }else if (luckId==ResultConst.JACKPOTISNULL){
+            luckMessage.setPrizeLevel(ResultConst.JACKPOTISNULL);
+            luckMessage.setLuckMessage(ResultConst.JACKPOTLUCK);
         }
         resultBean.setMessage(luckMessage);
         long end=System.currentTimeMillis();
@@ -187,7 +202,30 @@ public class LuckDrawController {
         return resultBean;
     }
 
+
+    @ResponseBody
+    @RequestMapping("/selectJackpot")
+    public ResultBean<PrizeResult> selectJackpot(){
+        PrizeResult result=luckDrawService.queryAllByRedis();
+        if (result.getFirstSize()<0){
+            result.setFirstSize(0);
+        }
+        if (result.getSecondSize()<0){
+            result.setSecondSize(0);
+        }
+        if (result.getThirdSize()<0){
+            result.setThirdSize(0);
+        }
+        if (result.getThankSize()<0){
+            result.setThankSize(0);
+        }
+        ResultBean<PrizeResult> resultResultBean=new ResultBean<>();
+        resultResultBean.setCode(1);
+        resultResultBean.setMessage(result);
+        return resultResultBean;
+    }
+
     public static void main(String[] args) {
-        SpringApplication.run(LuckDrawController.class,"--server.port=8081");
+        SpringApplication.run(LuckDrawController.class/*,"--server.port=8081"*/);
     }
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
+
+<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+<encoder>
+    <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] - %m%n</pattern>
+</encoder>
+</appender>
+
+<appender name="errorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+    <FileNamePattern>/var/log/sssj_.%d{yyyy-MM-dd}.log</FileNamePattern>
+    <MaxHistory>180</MaxHistory>
+</rollingPolicy>
+<encoder>
+    <pattern>%d{HH:mm:ss.SSS} %thread %X{invokeNo} %logger{40} %msg%n</pattern>
+    <charset>UTF-8</charset>
+</encoder>
+<!--只输出error级别日志-->
+<filter class="ch.qos.logback.classic.filter.LevelFilter">
+    <level>ERROR</level>
+    <onMatch>ACCEPT</onMatch>
+    <onMismatch>DENY</onMismatch>
+</filter>
+</appender>
+        <!--异步输出-->
+<appender name="async_log" class="ch.qos.logback.classic.AsyncAppender">
+<discardingThreshold>0</discardingThreshold>
+<queueSize>10</queueSize>
+<appender-ref ref="errorAppender"/>
+</appender>
+
+
+
+        </configuration>

@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/luckdraw?characterEncoding=UTF-8
-    username: root
-    password:
+    username: ubuntu
+    password: ubuntu
     driver-class-name: com.mysql.jdbc.Driver
     initialSize: 5
     minIdle: 5
@@ -16,14 +16,16 @@ spring:
     port: 6379
     database: 0
     pool:
-      max-active: 8
-      max-wait: -1
-      min-idle: 0
-      max-idle: 8
-    timeout: 0
+      max-active: 400
+      max-wait: 9000
+      min-idle: 100
+      max-idle: 400
+    timeout: 18000
     password:
 mybatis:
   type-aliases-package: dao.model
   mapper-locations: classpath:mapper/*.xml
 logging:
+  config: classpath:logback.xml
   level: debug
+

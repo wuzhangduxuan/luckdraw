@@ -3,15 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="user-scalable=no">
-<title>爪哇部落抽奖机</title>
+<title>爪哇部落抽奖</title>
 <style>
 	@charset "UTF-8";
-/**
- * 
- * @authors Your Name (you@example.org)
- * @date    2017-10-23 15:39:16
- * @version $Id$
- */
 * {
 	margin: 0;
 	padding: 0;
@@ -44,6 +38,38 @@ canvas {
 	left: 50%;
 	transform: translate(-50%, 100px);
 }
+#ajax-btn{
+	width: 350px;
+	height: 100px;
+	margin: 0px auto;
+	background: #FBD971;
+	color: #E64C3C;
+	line-height: 100px;
+	text-align: center;
+	font-size: 60px;
+	border-radius: 50px;
+	box-shadow: inset 0 4px 5px #E64C3C,inset 0 -4px 5px #FB7B76,0 5px 16px #F0C419;
+	text-shadow: 0 4px 5px #E64C3C;
+	transition: 0.1s;
+	animation: pulse 0.5s linear infinite;
+	border: 5px solid #fff;
+}
+#ajax-btn:link {
+    filter: saturate(100%);
+}
+#ajax-btn:visted {
+    filter: saturate(150%);
+}
+#ajax-btn:hover {
+    filter: saturate(150%);
+    box-shadow: inset 0 4px 5px #E64C3C,inset 0 -4px 5px #FB7B76,0 2px 2px #F0C419;
+    transform: translate(0,3px);
+}
+#ajax-btn:active {
+    filter: saturate(150%);
+    box-shadow: inset 0 4px 5px #E64C3C,inset 0 -4px 5px #FB7B76,0 2px 2px #F0C419;
+    transform: translate(0,3px);
+}
 #para{
 	color: #fff;
 	display: none;
@@ -54,6 +80,9 @@ canvas {
 h1{
 	font-size: 50px;
 	text-shadow: 0px 4px 12px #fff;
+	color: #fff;
+	animation: pulse 0.5s linear infinite;
+	text-shadow: 0 3px 5px white;
 }
 @keyframes pulse {
   from {
@@ -120,16 +149,10 @@ h1{
 <svg style="display:none"  t="1508762712245" id="happy" class="icon" style="" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2364" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><defs><style type="text/css"></style></defs><path d="M719.62819 946.809905L585.142857 812.30019a291.108571 291.108571 0 0 0 32.646095-15.993904l109.568-109.568c5.144381-9.216 12.702476-18.139429 16.822858-27.940572l130.608761 132.85181a96.743619 96.743619 0 0 1 26.745905 51.029333C977.456762 753.39581 1024 638.390857 1024 512 1024 229.229714 794.770286 0 512 0S0 229.229714 0 512s229.229714 512 512 512c85.211429 0 165.449143-20.992 236.129524-57.831619a95.865905 95.865905 0 0 1-28.501334-19.358476z" fill="#FBD971" p-id="2365"></path><path d="M292.571429 365.714286m-146.285715 0a146.285714 146.285714 0 1 0 292.571429 0 146.285714 146.285714 0 1 0-292.571429 0Z" fill="#FFFFFF" p-id="2366"></path><path d="M731.428571 365.714286m-146.285714 0a146.285714 146.285714 0 1 0 292.571429 0 146.285714 146.285714 0 1 0-292.571429 0Z" fill="#FFFFFF" p-id="2367"></path><path d="M680.009143 749.568A286.159238 286.159238 0 0 1 585.142857 812.30019l134.485333 134.485334a97.792 97.792 0 0 0 137.923048 0l17.237333-17.237334a97.792 97.792 0 0 0 0-137.923047l-130.608761-130.608762c-14.457905 34.377143-38.204952 62.585905-64.170667 88.551619z" fill="#FB7B76" p-id="2368"></path><path d="M292.571429 365.714286m-73.142858 0a73.142857 73.142857 0 1 0 146.285715 0 73.142857 73.142857 0 1 0-146.285715 0Z" fill="#AF8066" p-id="2369"></path><path d="M731.428571 365.714286m-73.142857 0a73.142857 73.142857 0 1 0 146.285715 0 73.142857 73.142857 0 1 0-146.285715 0Z" fill="#AF8066" p-id="2370"></path><path d="M735.792762 766.488381c-16.310857-12.312381-31.134476-22.723048-44.422095-28.891429-3.779048 3.998476-7.460571 8.070095-11.361524 11.971048-9.045333 9.045333-18.895238 17.212952-29.110857 24.966095 5.38819 5.266286 12.629333 7.43619 19.529143 6.875429 17.968762 8.313905 72.996571 51.248762 100.912761 79.164952a24.30781 24.30781 0 0 0 34.474667 0 24.356571 24.356571 0 0 0 0-34.474666c-16.213333-16.213333-45.007238-40.740571-70.022095-59.611429z" fill="#E64C3C" p-id="2371"></path><path d="M448.292571 853.162667c-48.298667 0-96.377905-9.264762-140.702476-27.745524a24.380952 24.380952 0 1 1 18.773334-45.007238c74.410667 30.98819 161.060571 32.01219 237.787428 2.82819 78.433524-29.842286 138.532571-86.820571 169.179429-160.377905a24.380952 24.380952 0 0 1 45.007238 18.773334c-35.84 86.040381-105.764571 152.551619-196.827429 187.196952a375.466667 375.466667 0 0 1-133.217524 24.332191z" fill="#F0C419" p-id="2372"></path></svg>
 </div>
 <div id="con">
-  <p id="para" style="display:none" >点击抽奖</p>
+  <div id="ajax-btn" style="display:none">猛戳有奖</div>
+  <p id="para" style="display:none" ></p>
 </div>
 <script>
-	/**
- * 
- * @authors Your Name (you@example.org)
- * @date    2017-10-23 15:40:12
- * @version $Id$
- */
-
 ;(function(main) {
 	var args = {};
 	window.onload = function() {
@@ -146,22 +169,25 @@ h1{
 	var hongbao = document.querySelector("#hongbao");
 	var happy = document.querySelector("#happy");
 	var mss;
+	var code =0;
 	var timer;
+	var t;
+	var btn = document.querySelector("#ajax-btn");
 
 	getCount();
 	timer = setInterval(function(){
 		para.style.display = 'block';
-		// if(count>0){
-		// 	para.innerHTML = count;
-		// 	count--;
-		// }else{
-		// 	para.innerHTML = "猛戳抽奖!"
-		// }
-		if(mss>0){
-			para.innerHTML = "距离抽奖还剩" + formatDuring(mss);
+		if(code == 1 && mss>0){
+				para.innerHTML = "距离抽奖还剩" + formatDuring(mss);
 			mss-= 1000;
-		}else{
-			para.innerHTML = "猛戳抽奖!"
+		}else if(code ==1){
+			// clearTimeout(t);
+			btn.style.display = "block";
+			para.style.display="none";
+			console.log("clearTimeout");
+		}else if(code = -1){
+			btn.style.display = "block";
+			// console.log("display");
 		}
 	},1000);
 
@@ -169,7 +195,8 @@ h1{
 		loadXMLDoc("/queryCountDown", function () {
 			if (xmlhttp.readyState==4 && xmlhttp.status==200){
 				var obj = JSON.parse(xmlhttp.responseText);
-			    mss = obj.message;
+			    mss = Math.floor(obj.message/1000)*1000;
+			    code = obj.code;
 			    iCount(mss);
 			}		
 		})
@@ -179,7 +206,7 @@ h1{
 	    // var days = parseInt(mss / (1000 * 60 * 60 * 24));
 	    // var hours = parseInt((mss % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 	    var minutes = parseInt((mss % (1000 * 60 * 60)) / (1000 * 60));
-	    var seconds = parseInt((mss % (1000 * 60)) / 1000);
+	    var seconds = (mss % (1000 * 60)) / 1000;
 	    // return days + " 天 " + hours + " 小时 " + minutes + " 分钟 " + seconds + " 秒 ";
 	    if(mss >= 60000){
 	    	return minutes + " 分钟 " + seconds + " 秒 ";
@@ -206,8 +233,8 @@ h1{
 			if (xmlhttp.readyState==4 && xmlhttp.status==200){
 
 				if(xmlhttp.responseText == ""){
-                    cry.style.display = "block";
-					para.innerHTML = "<h1>很遗憾，你已经参与了抽奖，不能再进行抽奖了</h1>";
+					cry.style.display = "block";
+					con.innerHTML = "<h1>很遗憾，你已经参与了抽奖，不能再进行抽奖了</h1>";
 					return;
 				}
 			    var obj = JSON.parse(xmlhttp.responseText);
@@ -218,6 +245,10 @@ h1{
 					cry.style.display = "block";
 			    }else if (obj.code == 0) {
 			    	switch(obj.message.prizeLevel){
+                        case -2:
+                            data="很遗憾，奖池已经空了";
+                            happy.style.display = "block";
+                            break;
 			    		case 0:
 				    		data = "亲，你可以再抽一次奖哦~";
 							happy.style.display = "block";
@@ -240,7 +271,7 @@ h1{
 				    		break;
 			    	}
 			    }
-			    para.innerHTML = "<h1>"+data+"</h1>"
+			    con.innerHTML = "<h1>"+data+"</h1>"
 			}
 		});
 	}
@@ -408,20 +439,38 @@ h1{
 		boxList.push(box);
 	}
 			
+	// function iCount(mss) {
+	
+	// 	t = setTimeout(function(){
+	// 		document.addEventListener('click', function(e) {
+	// 			clearInterval(timer);
+	// 			para.style.display = 'none';
+	// 			if(!clickToggle){
+	// 			  getAjax();
+	// 			}
+	// 			para.style.display = 'block';
+	// 			clickToggle = true;
+	// 		});
+	// 	},mss)
+	// }
 	function iCount(mss) {
 	
-		setTimeout(function(){
-			document.addEventListener('click', function(e) {
-				clearInterval(timer);
-				para.style.display = 'none';
-				if(!clickToggle){
-				  getAjax();
-				}
-				para.style.display = 'block';
-				clickToggle = true;
-			});
-		},mss)	
+		t = setTimeout(function(){
+			clearInterval(timer);
+			console.log("setTimeout");
+		},mss+2000)
 	}
+	btn.addEventListener('click', function(e) {
+
+		// para.style.display = 'none';
+		if(!clickToggle){
+		  getAjax();
+		btn.remove();
+		}
+		para.style.display = 'block';
+		// btn.style.display = 'none';
+		clickToggle = true;
+	});
 
 
 	requestAnimationFrame(function loop() {
@@ -432,11 +481,6 @@ h1{
 		ctx.fillRect(0, 0, WIDTH, HEIGHT);
 
 		ctx.fillStyle = 'white';
-		// if (clickToggle ==false) {
-		// 	ctx.fillText('点击抽奖', WIDTH / 2, HEIGHT / 2 + 100);
-		// }else{
-		// 	ctx.fillText('一等奖', WIDTH / 2, HEIGHT / 2);
-		// }
 
 		ctx.globalCompositeOperation = 'lighter';
 
